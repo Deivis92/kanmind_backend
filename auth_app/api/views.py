@@ -10,18 +10,18 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        print(f"Request Data: {request.data}")  # Zum Debuggen
+        print(f"Request Data: {request.data}")  
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
-        print(f"Errors: {serializer.errors}")  # Fehlerausgabe in der Konsole
+        print(f"Errors: {serializer.errors}")  
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UserListView(APIView):
-    permission_classes = [AllowAny]  # Sicherstellen, dass der Benutzer authentifiziert ist
+    permission_classes = [AllowAny]  
 
     def get(self, request):
-        users = User.objects.all()  # Alle Benutzer abrufen
-        serializer = UserListSerializer(users, many=True)  # Viele Benutzer serialisieren
+        users = User.objects.all() 
+        serializer = UserListSerializer(users, many=True)  
         return Response(serializer.data, status=status.HTTP_200_OK)    

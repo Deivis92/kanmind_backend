@@ -5,12 +5,13 @@ from rest_framework.authtoken.models import Token
 
 class RegisterSerializer(serializers.ModelSerializer):
     repeated_password = serializers.CharField(write_only=True)
+    fullname = serializers.CharField(write_only=True) 
 
 
     class Meta:
 
         model = User
-        fields = ['username', 'email', 'password', 'repeated_password']
+        fields = ['fullname', 'email', 'password', 'repeated_password']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -21,14 +22,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data   
     
     def create(self, validated_data):
- 
-        if 'username' not in validated_data:
-            fullname = validated_data.get('fullname', '')
-            username = self.generate_username_from_fullname(fullname)
-            validated_data['username'] = username
-
-
+        fullname = validated_data.pop('fullname', '')
         validated_data.pop('repeated_password')
+
+        if 'username' not in validated_data:
+            validated_data['username'] = self.generate_username_from_fullname(fullname)
+
         user = User.objects.create_user(**validated_data)
         Token.objects.create(user=user)
         return user
